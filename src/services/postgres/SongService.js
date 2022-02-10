@@ -28,8 +28,23 @@ class SongService {
     return result.rows[0].id;
   }
 
-  async getSongs() {
-    const result = await this._pool.query('SELECT * FROM songs');
+  async getSongs({title,performer}) {
+    const baseQuery = `SELECT 
+                          *
+                        FROM songs`;
+    const tempQuery = baseQuery.concat(" ",
+                                        (title && performer) ? 
+                                          'WHERE LOWER(title) ~ $1 and LOWER(performer) ~ $2' :
+                                          (title) ? 'WHERE LOWER(title) ~ $1' :
+                                          (performer) ? 'WHERE LOWER(performer) ~ $1' :
+                                          '');
+    const query = {text: tempQuery,
+                    values: (title && performer) ? [title.toLowerCase(),performer.toLowerCase()] :
+                            (title) ? [title.toLowerCase()] :
+                            (performer) ? [performer.toLowerCase()] :
+                            [],
+                  };
+    const result = await this._pool.query(query);
     return result.rows.map(mapSongsToModel);
   }
 

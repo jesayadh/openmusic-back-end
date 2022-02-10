@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
-const { mapAlbumToModel,mapSongToModel } = require('../../utils');
+const { mapAlbumToModel,mapSongsToModel } = require('../../utils');
 
 class AlbumService {
   constructor() {
@@ -34,16 +34,31 @@ class AlbumService {
   }
 
   async getAlbumById(id) {
-    const query = {
-        text: 'SELECT * FROM albums WHERE id = $1',
+    const queryAlbum = {
+        text: `select 
+                  *
+                from albums
+                where id = $1`,
         values: [id],
     };
-    const result = await this._pool.query(query);
-    if (!result.rows.length) {
-        throw new NotFoundError('Album tidak ditemukan');
-    }
+    const querySong = {
+      text: `select 
+                *
+              from songs
+              where "albumId" = $1`,
+      values: [id],
+    };
 
-    return result.rows.map(mapAlbumToModel)[0];
+    const resultAlbum = await this._pool.query(queryAlbum);
+    const resultSong = await this._pool.query(querySong);
+    if (!resultAlbum.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+    const songs = resultSong.rows.map(mapSongsToModel);
+    let album = resultAlbum.rows.map(mapAlbumToModel)[0];
+    album.songs = songs;
+
+    return album;
   }
 
   async editAlbumById(id, { name, year }) {
