@@ -4,9 +4,11 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const SongsService = require('./SongsService');
 const { mapPlaylistToModel, mapSongsToModel } = require('../../utils');
+const PlaylistsService = require('./PlaylistsService');
 
-class PlaylistSongsService {
-  constructor() {
+class PlaylistSongsService extends PlaylistsService {
+  constructor(collaborationService) {
+    super(collaborationService);
     this._pool = new Pool();
     this._song = new SongsService();
   }
@@ -57,7 +59,6 @@ class PlaylistSongsService {
     const songs = resultSong.rows.map(mapSongsToModel);
     let playlist = resultPlaylist.rows.map(mapPlaylistToModel)[0];
     playlist.songs = songs;
-    console.log(playlist);
 
     return playlist;
   }
