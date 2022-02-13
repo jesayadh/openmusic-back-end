@@ -1,13 +1,16 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
+const UsersService = require('./UsersService');
 
 class CollaborationsService {
   constructor() {
     this._pool = new Pool();
+    this._user = new UsersService();
   }
 
   async addCollaboration(playlistId, userId) {
+    await this._user.getUserById(userId);
     const id = `collab-${nanoid(16)}`;
 
     const query = {
