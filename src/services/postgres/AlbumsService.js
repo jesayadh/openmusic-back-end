@@ -41,6 +41,11 @@ class AlbumsService {
                 where id = $1`,
         values: [id],
     };
+    const resultAlbum = await this._pool.query(queryAlbum);
+    if (!resultAlbum.rows.length) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+    
     const querySong = {
       text: `select 
                 *
@@ -48,11 +53,6 @@ class AlbumsService {
               where "album_id" = $1`,
       values: [id],
     };
-
-    const resultAlbum = await this._pool.query(queryAlbum);
-    if (!resultAlbum.rows.length) {
-      throw new NotFoundError('Album tidak ditemukan');
-    }
     const resultSong = await this._pool.query(querySong);
     const songs = resultSong.rows.map(mapSongsToModel);
     let album = resultAlbum.rows.map(mapAlbumToModel)[0];
