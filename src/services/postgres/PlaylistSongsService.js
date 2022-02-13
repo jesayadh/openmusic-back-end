@@ -3,7 +3,7 @@ const { nanoid } = require('nanoid');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const SongsService = require('./SongsService');
-const { mapPlaylistToModel, mapSongsToModel } = require('../../utils');
+const { mapPlaylistToModel, mapSongsToModel, mapActivityPlaylistToModel } = require('../../utils');
 const PlaylistsService = require('./PlaylistsService');
 
 class PlaylistSongsService extends PlaylistsService {
@@ -31,7 +31,44 @@ class PlaylistSongsService extends PlaylistsService {
 
     return result.rows[0].id;
   }
+  
+  async addPlaylistActivity(playlistId,userId,action,{songId}) {
+    const id = nanoid(16);
+    const time = new Date().toISOString();
+    const query = {
+      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      values: [id, playlistId, songId, userId, action, time],
+    };
+    
+    const result = await this._pool.query(query);
+    if (!result.rows[0].id) {
+      throw new InvariantError('Playlist Activity gagal ditambahkan');
+    }
 
+    return result.rows[0].id;
+  }
+
+  async getPlaylistActivity(playlistId) {
+    const query = {
+      text: `SELECT
+                p.id,
+                username,
+                title,
+                action,
+                time
+              FROM playlist_song_activities psa
+              LEFT JOIN playlists p ON p.id = psa.playlist_id
+              LEFT JOIN users u ON u.id = psa.user_id 
+              LEFT JOIN songs s ON s.id = psa.song_id
+              WHERE p.id = $1`,
+      values: [playlistId],
+    };
+    const result = await this._pool.query(query);
+    const activity = ({playlistId});
+    activity.activities = result.rows.map(mapActivityPlaylistToModel);
+    return activity;
+  }
+  
   async getSongFromPlaylists(playlistId) {
     const queryPlaylist = {
       text: `SELECT

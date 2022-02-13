@@ -45,5 +45,17 @@ const mapPlaylistToModel = ({
     name,
     username : owner,
 });
-   
-module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel,mapPlaylistToModel };
+
+const mapActivityPlaylistToModel = ({
+    username,
+    title,
+    action,
+    time,
+}) => ({
+    username,
+    title,
+    action,
+    time,
+});
+
+module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel,mapPlaylistToModel,mapActivityPlaylistToModel };

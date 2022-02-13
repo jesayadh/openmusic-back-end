@@ -23,6 +23,14 @@ const routes = (handler) => [
       auth: 'playlistsapp_jwt',
     },
   },
+  {
+    method: 'GET',
+    path: '/playlists/{id}/activities',
+    handler: handler.getPlaylistActivityHandler,
+    options: {
+      auth: 'playlistsapp_jwt',
+    },
+  },
 ];
 
 module.exports = routes;
