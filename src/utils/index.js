@@ -38,20 +38,12 @@ const mapSongsToModel = ({
 
 const mapPlaylistToModel = ({
     id,
-    title,
-    body,
-    tags,
-    created_at,
-    updated_at,
-    username,
+    name,
+    owner,
 }) => ({
     id,
-    title,
-    body,
-    tags,
-    createdAt: created_at,
-    updatedAt: updated_at,
-    username,
+    name,
+    username : owner,
 });
    
-module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel };
+module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel,mapPlaylistToModel };

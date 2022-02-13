@@ -4,7 +4,7 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapAlbumToModel,mapSongsToModel } = require('../../utils');
 
-class AlbumService {
+class AlbumsService {
   constructor() {
     this._pool = new Pool();
   }
@@ -45,15 +45,15 @@ class AlbumService {
       text: `select 
                 *
               from songs
-              where "albumId" = $1`,
+              where "album_id" = $1`,
       values: [id],
     };
 
     const resultAlbum = await this._pool.query(queryAlbum);
-    const resultSong = await this._pool.query(querySong);
     if (!resultAlbum.rows.length) {
       throw new NotFoundError('Album tidak ditemukan');
     }
+    const resultSong = await this._pool.query(querySong);
     const songs = resultSong.rows.map(mapSongsToModel);
     let album = resultAlbum.rows.map(mapAlbumToModel)[0];
     album.songs = songs;
@@ -89,4 +89,4 @@ class AlbumService {
   }
 }
 
-module.exports = AlbumService;
+module.exports = AlbumsService;
