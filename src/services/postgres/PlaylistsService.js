@@ -56,7 +56,7 @@ class PlaylistsService {
               p.name,
               u.username as owner
     FROM playlists
-    LEFT JOIN users ON users.id = playlists.owner
+    JOIN users ON users.id = playlists.owner
     WHERE playlists.id = $1`,
       values: [id],
     };

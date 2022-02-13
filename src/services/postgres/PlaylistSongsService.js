@@ -17,7 +17,7 @@ class PlaylistSongsService extends PlaylistsService {
     await this._song.getSongById(songId);
     const id = nanoid(16);
     const createdAt = new Date().toISOString();
-    const updatedAt = new Date().toISOString();
+    const updatedAt = createdAt;
     const query = {
       text: 'INSERT INTO "playlistSongs" VALUES($1, $2, $3, $4, $5) RETURNING id',
       values: [id, playlistId, songId, createdAt, updatedAt],
@@ -57,9 +57,9 @@ class PlaylistSongsService extends PlaylistsService {
                 action,
                 time
               FROM playlist_song_activities psa
-              LEFT JOIN playlists p ON p.id = psa.playlist_id
-              LEFT JOIN users u ON u.id = psa.user_id 
-              LEFT JOIN songs s ON s.id = psa.song_id
+              JOIN playlists p ON p.id = psa.playlist_id
+              JOIN users u ON u.id = psa.user_id 
+              JOIN songs s ON s.id = psa.song_id
               WHERE p.id = $1`,
       values: [playlistId],
     };

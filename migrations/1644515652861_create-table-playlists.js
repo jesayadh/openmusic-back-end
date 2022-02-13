@@ -25,6 +25,8 @@ exports.up = pgm => {
           notNull: true,
         },
     });
+
+    pgm.addConstraint('playlists', 'fk_songs.user_id_users.id', 'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE');
 };
 
 exports.down = pgm => {
