@@ -7,18 +7,11 @@ const routes = (handler) => [
     handler: handler.postUploadImageHandler,
     options: {
       payload: {
+        maxBytes: 512000,
+        parse: true,
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
-      },
-    },
-  },
-  {
-    method: 'GET',
-    path: '/upload/{param*}',
-    handler: {
-      directory: {
-        path: path.resolve(__dirname, 'file'),
       },
     },
   },

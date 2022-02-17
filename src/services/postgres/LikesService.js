@@ -5,9 +5,10 @@ const UsersService = require('./UsersService');
 const { mapCountToModel, } = require('../../utils');
 
 class LikesService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
     this._user = new UsersService();
+    this._cacheService = cacheService;
   }
 
   async addLike(albumId, userId) {
@@ -49,8 +50,10 @@ class LikesService {
       values: [albumId],
     };
     const result = await this._pool.query(query);
+    const likes = parseInt(result.rows.map(mapCountToModel)[0].likes)
+    await this._cacheService.set(`likes:${albumId}`, parseInt(likes));
 
-    return parseInt(result.rows.map(mapCountToModel)[0].likes);
+    return parseInt(likes);
   }
 
   async verifyLiker(albumId, userId) {
@@ -62,9 +65,11 @@ class LikesService {
 
     if (!result.rows.length) {
       await this.addLike(albumId, userId);
+      await this._cacheService.delete(`likes:${albumId}`);
       return "Like berhasil ditambahkan";
     }else{
       await this.deleteLike(albumId, userId);
+      await this._cacheService.delete(`likes:${albumId}`);
       return "Like berhasil dikurangkan";
     }
   }

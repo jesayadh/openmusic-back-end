@@ -18,6 +18,7 @@ class ExportsHandler {
       this._validator.validateExportPlaylistsPayload(request.payload);
 
       const message = {
+        playlistId: id,
         userId: request.auth.credentials.id,
         targetEmail: request.payload.targetEmail,
       };
@@ -26,7 +27,7 @@ class ExportsHandler {
 
       const response = h.response({
         status: 'success',
-        message: 'Permintaan Anda dalam antrean',
+        message: 'Permintaan Anda sedang kami proses',
       });
       response.code(201);
       return response;

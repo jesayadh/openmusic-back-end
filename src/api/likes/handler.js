@@ -1,9 +1,10 @@
 const ClientError = require('../../exceptions/ClientError');
      
 class LikesHandler {
-  constructor(albumService, likesService) {
+  constructor(albumService, likesService, cacheService) {
     this._albumService = albumService;
     this._likesService = likesService;
+    this._cacheService = cacheService;
  
     this.likeAlbumByIdHandler = this.likeAlbumByIdHandler.bind(this);
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
@@ -50,14 +51,28 @@ class LikesHandler {
     try {
       const { id } = request.params;
       const { id:albumId } = await this._albumService.getAlbumById(id);
-      const likes = await this._likesService.getLiker(albumId);
-
-      return {
-        status: 'success',
-        data: {
-          likes,
-        },
-      };
+      try {
+        const likes = parseInt(await this._cacheService.get(`likes:${albumId}`));
+        
+        const response = h.response({
+          status: 'success',
+          data: {
+            likes,
+          },
+        });
+        response.header(`X-Data-Source`,'cache');
+        return response;
+      } catch (error) {
+        const likes = await this._likesService.getLiker(albumId);
+        const response = h.response({
+          status: 'success',
+          data: {
+            likes,
+          },
+        });
+        response.header(`X-Data-Source`,likes);
+        return response;
+      }
     } catch (error) {
       if (error instanceof ClientError) {
         const response = h.response({
