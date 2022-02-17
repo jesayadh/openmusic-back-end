@@ -10,6 +10,12 @@ const mapAlbumToModel = ({
     coverUrl,
 });
 
+const mapCountToModel = ({
+    count: likes,
+}) => ({
+    likes,
+});
+
 const mapSongToModel = ({ 
     id,
     title,
@@ -60,4 +66,4 @@ const mapActivityPlaylistToModel = ({
     time,
 });
 
-module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel,mapPlaylistToModel,mapActivityPlaylistToModel };
+module.exports = { mapAlbumToModel,mapSongToModel,mapSongsToModel,mapPlaylistToModel,mapActivityPlaylistToModel,mapCountToModel };
