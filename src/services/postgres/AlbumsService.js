@@ -9,18 +9,18 @@ class AlbumsService {
     this._pool = new Pool();
   }
 
-  async addAlbum({ name, year }) {
+  async addAlbum({ name, year, fileLocation }) {
     const id = "album-"+nanoid(16);
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5) RETURNING id',
-      values: [id, name, year, createdAt, updatedAt],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
+      values: [id, name, year, fileLocation, createdAt, updatedAt],
     };
 
     const result = await this._pool.query(query);
- 
+
     if (!result.rows[0].id) {
       throw new InvariantError('Album gagal ditambahkan');
     }
@@ -61,11 +61,12 @@ class AlbumsService {
     return album;
   }
 
-  async editAlbumById(id, { name, year }) {
+  async editAlbumById(id, { name, year, fileLocation }) {
     const updatedAt = new Date().toISOString();
+    
     const query = {
-      text: 'UPDATE albums SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id',
-      values: [name, year, updatedAt, id],
+      text: 'UPDATE albums SET name = $1, year = $2, cover = $3, updated_at = $4 WHERE id = $5 RETURNING id',
+      values: [name, year, fileLocation, updatedAt, id],
     };
 
     const result = await this._pool.query(query);

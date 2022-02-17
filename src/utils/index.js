@@ -2,10 +2,12 @@ const mapAlbumToModel = ({
     id,
     name,
     year,
+    cover:coverUrl,
 }) => ({
     id,
     name,
     year,
+    coverUrl,
 });
 
 const mapSongToModel = ({ 
